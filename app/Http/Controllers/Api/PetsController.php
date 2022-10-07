@@ -35,13 +35,18 @@ class PetsController extends Controller
      */
     public function store(CreatePetRequest $request, Exception $e)
     {
-
-        Pet::create($request->validated());
-        if(!Pet){
-          abort(code:404, message: 'Mascota no encontrada')   ;
+        try{
+            Pet::create($request->validated());
+            return response()->json([], 200);
+        }catch(Exception $e){
+            if ($e instanceof HttpException && $e->getStatusCode()== 404)
+            {
+                return ['status' =>404, 'msg' => "pagina no encontrada"];
+            } else if($e instanceof HttpException && $e->getStatusCode()== 404){
+                return ['status' =>400, 'msg' => "peticion mala"];
+            }
         }
-
-        return response()->json([], 200);
+    
     }
 
     /**
